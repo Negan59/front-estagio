@@ -1,0 +1,30 @@
+/* App.css */
+
+.menu-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px; /* Defina a altura desejada para a barra de menu */
+    background-color: transparent; /* Defina a cor de fundo desejada */
+  }
+  
+  .logo {
+    width: 150px; /* Defina o tamanho desejado para o logo */
+    height: auto;
+    margin-right: 10px;
+    margin-top: 30px;
+  }
+  
+  .parish-name {
+    font-size: 20px; /* Defina o tamanho de fonte desejado */
+    font-weight: bold;
+    margin-top: 80px;
+  }
+
+  .login-icon {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 48px;
+    color: black;
+  }
