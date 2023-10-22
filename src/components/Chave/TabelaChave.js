@@ -11,7 +11,8 @@ const TabelaChave = () => {
   const [chaveSelecionada, setChaveSelecionada] = useState(null);
   const [erro, setErro] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [chavesPerPage] = useState(5);
+  const [chavesPerPage] = useState(10);
+  const [totalChaves, setTotalChaves] = useState(0);
 
   const handleAlterarClick = (chave) => {
     setChaveSelecionada(chave);
@@ -30,13 +31,27 @@ const TabelaChave = () => {
   };
 
   const fetchChaves = () => {
-    fetch('https://estagio-guilherme.azurewebsites.net/api/chave')
+    console.log(currentPage)
+    fetch(`https://estagio-guilherme.azurewebsites.net/api/chave/pagina/${currentPage}`)
       .then((response) => response.json())
       .then((data) => {
         setChaves(data);
       })
       .catch((error) => {
         console.error('Erro ao buscar os dados das chaves:', error);
+        // Tratar o erro de acordo com as necessidades do seu aplicativo
+      });
+  };
+
+  const fetchTotalChaves = () => {
+    fetch('https://estagio-guilherme.azurewebsites.net/api/chave/quantidade')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        setTotalChaves(data);
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar a quantidade total de chaves:', error);
         // Tratar o erro de acordo com as necessidades do seu aplicativo
       });
   };
@@ -62,18 +77,16 @@ const TabelaChave = () => {
   };
 
   useEffect(() => {
-    // Função para buscar os dados das chaves ao carregar o componente
     fetchChaves();
-  }, []);
+    fetchTotalChaves();
+  }, [currentPage]);
 
-  // Lógica para calcular índices das chaves atuais
   const indexOfLastChave = currentPage * chavesPerPage;
   const indexOfFirstChave = indexOfLastChave - chavesPerPage;
   const currentChaves = chaves.slice(indexOfFirstChave, indexOfLastChave);
 
-  // Lógica para criar números de página
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(chaves.length / chavesPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(totalChaves / chavesPerPage); i++) {
     pageNumbers.push(i);
   }
 
