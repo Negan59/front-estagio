@@ -79,13 +79,13 @@ const TabelaSalas = () => {
               <td>{sala.numerosala}</td>
               <td>{sala.descricaosala}</td>
               <td>
-                <Button variant="danger" onClick={() => deletaSala(sala.id)}>
-                  <FiTrash2 size={20} />
+                <Button className="btn-excluir" onClick={() => deletaSala(sala.id)}>
+                  <FiTrash2 size={20} color="#FF0000" />
                 </Button>
               </td>
               <td>
-                <Button variant="success" onClick={() => handleAlterarClick(sala)}>
-                  <FiEdit size={20} />
+                <Button className="btn-editar" onClick={() => handleAlterarClick(sala)}>
+                  <FiEdit size={20} color="#00FF00" />
                 </Button>
               </td>
             </tr>

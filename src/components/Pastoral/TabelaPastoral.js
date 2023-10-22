@@ -82,13 +82,13 @@ const TabelaPastorais = () => {
                   <td>{pastoral.datacriacao}</td>
                   <td>{pastoral.dataencerramento}</td>
                   <td>
-                    <Button variant="danger" onClick={() => deletaPastoral(pastoral.id)}>
-                      <FiTrash2 size={20} />
+                    <Button className="btn-excluir" onClick={() => deletaPastoral(pastoral.id)}>
+                      <FiTrash2 size={20} color="#FF0000" />
                     </Button>
                   </td>
                   <td>
-                    <Button variant="success" onClick={() => handleAlterarClick(pastoral)}>
-                      <FiEdit size={20} />
+                    <Button className="btn-editar" onClick={() => handleAlterarClick(pastoral)}>
+                      <FiEdit size={20} color="#00FF00" />
                     </Button>
                   </td>
                 </tr>
@@ -118,13 +118,13 @@ const TabelaPastorais = () => {
                   <td>{pastoral.datacriacao}</td>
                   <td>{pastoral.dataencerramento}</td>
                   <td>
-                    <Button variant="danger" onClick={() => deletaPastoral(pastoral.id)}>
-                      <FiTrash2 size={20} />
+                    <Button className="btn-excluir" onClick={() => deletaPastoral(pastoral.id)}>
+                      <FiTrash2 size={20} color="#FF0000" />
                     </Button>
                   </td>
                   <td>
-                    <Button variant="success" onClick={() => handleAlterarClick(pastoral)}>
-                      <FiEdit size={20} />
+                    <Button className="btn-editar" onClick={() => handleAlterarClick(pastoral)}>
+                      <FiEdit size={20} color="#00FF00" />
                     </Button>
                   </td>
                 </tr>

@@ -81,13 +81,13 @@ const TabelaParoquianos = () => {
               <td>{paroquiano.email}</td>
               <td>{paroquiano.senha}</td>
               <td>
-                <Button variant="danger" onClick={() => deletaParoquiano(paroquiano.id)}>
-                  <FiTrash2 size={20} />
+                <Button className="btn-excluir" onClick={() => deletaParoquiano(paroquiano.id)}>
+                  <FiTrash2 size={20} color="#FF0000" />
                 </Button>
               </td>
               <td>
-                <Button variant="success" onClick={() => handleAlterarClick(paroquiano)}>
-                  <FiEdit size={20} />
+                <Button className="btn-editar" onClick={() => handleAlterarClick(paroquiano)}>
+                  <FiEdit size={20} color="#00FF00" />
                 </Button>
               </td>
             </tr>

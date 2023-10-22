@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ModalChave from './ModalChave';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Button } from 'react-bootstrap';
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import '../../styles/tabela.css';
 
 const TabelaChave = () => {
@@ -82,13 +83,13 @@ const TabelaChave = () => {
               <td>{chave.nome}</td>
               <td>{chave.sala.descricaosala}</td>
               <td>
-                <Button variant="danger" onClick={() => deletaChave(chave.id)}>
-                  Excluir
+                <Button className="btn-excluir" onClick={() => deletaChave(chave.id)}>
+                  <FiTrash2 size={20} color="#FF0000" />
                 </Button>
               </td>
               <td>
-                <Button variant="success" onClick={() => handleAlterarClick(chave)}>
-                  Alterar
+                <Button className="btn-editar" onClick={() => handleAlterarClick(chave)}>
+                  <FiEdit size={20} color="#00FF00" />
                 </Button>
               </td>
             </tr>

@@ -72,13 +72,13 @@ const TabelaItensSalaoParoquial = () => {
                                 <tr key={itemsalao.id}>
                                     <td>{itemsalao.nome}</td>
                                     <td>
-                                        <Button variant="danger" onClick={() => deletaItensSalaoParoquial(itemsalao.id)}>
-                                            <FiTrash2 size={20} />
+                                        <Button className="btn-excluir" onClick={() => deletaItensSalaoParoquial(itemsalao.id)}>
+                                            <FiTrash2 size={20} color="#FF0000" />
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button variant="success" onClick={() => handleAlterarClick(itemsalao)}>
-                                            <FiEdit size={20} />
+                                        <Button className="btn-editar" onClick={() => handleAlterarClick(itemsalao)}>
+                                            <FiEdit size={20} color="#00FF00" />
                                         </Button>
                                     </td>
                                 </tr>
@@ -100,13 +100,13 @@ const TabelaItensSalaoParoquial = () => {
                                 <tr key={itemsalao.id}>
                                     <td>{itemsalao.nome}</td>
                                     <td>
-                                        <Button variant="danger" onClick={() => deletaItensSalaoParoquial(itemsalao.id)}>
-                                            <FiTrash2 size={20} />
+                                        <Button className="btn-excluir" onClick={() => deletaItensSalaoParoquial(itemsalao.id)}>
+                                            <FiTrash2 size={20} color="#FF0000" />
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button variant="success" onClick={() => handleAlterarClick(itemsalao)}>
-                                            <FiEdit size={20} />
+                                        <Button className="btn-editar" onClick={() => handleAlterarClick(itemsalao)}>
+                                            <FiEdit size={20} color="#00FF00" />
                                         </Button>
                                     </td>
                                 </tr>

@@ -76,13 +76,13 @@ const TabelaFuncionarios = () => {
                                     <td>{funcionario.email}</td>
                                     <td>{funcionario.telefone}</td>
                                     <td>
-                                        <Button variant="danger" onClick={() => deletaFuncionario(funcionario.id)}>
-                                            <FiTrash2 size={20} />
+                                        <Button className="btn-excluir" onClick={() => deletaFuncionario(funcionario.id)}>
+                                            <FiTrash2 size={20} color="#FF0000" />
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button variant="success" onClick={() => handleAlterarClick(funcionario)}>
-                                            <FiEdit size={20} />
+                                        <Button className="btn-editar" onClick={() => handleAlterarClick(funcionario)}>
+                                            <FiEdit size={20} color="#00FF00" />
                                         </Button>
                                     </td>
                                 </tr>
@@ -108,13 +108,13 @@ const TabelaFuncionarios = () => {
                                     <td>{funcionario.email}</td>
                                     <td>{funcionario.telefone}</td>
                                     <td>
-                                        <Button variant="danger" onClick={() => deletaFuncionario(funcionario.id)}>
-                                            <FiTrash2 size={20} />
+                                        <Button className="btn-excluir" onClick={() => deletaFuncionario(funcionario.id)}>
+                                            <FiTrash2 size={20} color="#FF0000" />
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button variant="success" onClick={() => handleAlterarClick(funcionario)}>
-                                            <FiEdit size={20} />
+                                        <Button className="btn-editar" onClick={() => handleAlterarClick(funcionario)}>
+                                            <FiEdit size={20} color="#00FF00" />
                                         </Button>
                                     </td>
                                 </tr>
