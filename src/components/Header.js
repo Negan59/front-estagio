@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../images/paroquia.jpeg';
+import logo from '../images/paroquia.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown } from 'react-bootstrap';
@@ -15,8 +15,8 @@ const Header = () => {
                         &nbsp;Login
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item href="#logout">Sair</Dropdown.Item>
                         <Dropdown.Item href="#help">Ajuda</Dropdown.Item>
+                        <Dropdown.Item href="#logout">Sair</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layout } from 'antd';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'; // Importe o Router, Route, Routes e Link
-import Sidebar from './components/Menu'; // Importe o seu componente de barra lateral
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Sidebar from './components/Menu';
 import './styles/app.css';
 import Header from './components/Header';
 import Home from './components/Home';
@@ -29,9 +29,11 @@ function App() {
 
   return (
     <Router>
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ minHeight: '100vh', backgroundColor: 'white' }}> {/* Defina o background como branco */}
         <Sidebar collapsed={collapsed} />
+        
         <Layout className="site-layout">
+        <Header></Header>
           <Content style={{ margin: '16px' }}>
             <Routes>
               <Route path="/" element={<Home />} />

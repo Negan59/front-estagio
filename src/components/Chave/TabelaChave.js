@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ModalChave from './ModalChave';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Pagination } from 'react-bootstrap';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import '../../styles/tabela.css';
 
@@ -10,6 +10,8 @@ const TabelaChave = () => {
   const [showModal, setShowModal] = useState(false);
   const [chaveSelecionada, setChaveSelecionada] = useState(null);
   const [erro, setErro] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [chavesPerPage] = useState(5);
 
   const handleAlterarClick = (chave) => {
     setChaveSelecionada(chave);
@@ -31,7 +33,6 @@ const TabelaChave = () => {
     fetch('https://estagio-guilherme.azurewebsites.net/api/chave')
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
         setChaves(data);
       })
       .catch((error) => {
@@ -65,6 +66,19 @@ const TabelaChave = () => {
     fetchChaves();
   }, []);
 
+  // Lógica para calcular índices das chaves atuais
+  const indexOfLastChave = currentPage * chavesPerPage;
+  const indexOfFirstChave = indexOfLastChave - chavesPerPage;
+  const currentChaves = chaves.slice(indexOfFirstChave, indexOfLastChave);
+
+  // Lógica para criar números de página
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(chaves.length / chavesPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="container mt-4">
       {erro && <Erro mensagem={erro.mensagem} sucesso={erro.sucesso} />}
@@ -78,7 +92,7 @@ const TabelaChave = () => {
           </tr>
         </thead>
         <tbody>
-          {chaves.map((chave) => (
+          {currentChaves.map((chave) => (
             <tr key={chave.id}>
               <td>{chave.nome}</td>
               <td>{chave.sala.descricaosala}</td>
@@ -96,6 +110,14 @@ const TabelaChave = () => {
           ))}
         </tbody>
       </Table>
+
+      <Pagination>
+        {pageNumbers.map((number) => (
+          <Pagination.Item key={number} active={number === currentPage} onClick={() => paginate(number)}>
+            {number}
+          </Pagination.Item>
+        ))}
+      </Pagination>
 
       {showModal && chaveSelecionada && (
         <ModalChave
