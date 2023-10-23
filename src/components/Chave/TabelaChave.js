@@ -26,34 +26,29 @@ const TabelaChave = () => {
 
   const handleAlterarSubmit = (dadosChave) => {
     // Fechar o modal
-    fetchChaves();
     setShowModal(false);
   };
 
-  const fetchChaves = () => {
-    console.log(currentPage)
-    fetch(`https://estagio-guilherme.azurewebsites.net/api/chave/pagina/${currentPage}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setChaves(data);
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar os dados das chaves:', error);
-        // Tratar o erro de acordo com as necessidades do seu aplicativo
-      });
+  const fetchChaves = async () => {
+    try {
+      const response = await fetch(`https://estagio-guilherme.azurewebsites.net/api/chave/pagina/${currentPage}`);
+      const data = await response.json();
+      setChaves(data);
+    } catch (error) {
+      console.error('Erro ao buscar os dados das chaves:', error);
+      // Tratar o erro de acordo com as necessidades do seu aplicativo
+    }
   };
 
-  const fetchTotalChaves = () => {
-    fetch('https://estagio-guilherme.azurewebsites.net/api/chave/quantidade')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        setTotalChaves(data);
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar a quantidade total de chaves:', error);
-        // Tratar o erro de acordo com as necessidades do seu aplicativo
-      });
+  const fetchTotalChaves = async () => {
+    try {
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/chave/quantidade');
+      const data = await response.json();
+      setTotalChaves(data);
+    } catch (error) {
+      console.error('Erro ao buscar a quantidade total de chaves:', error);
+      // Tratar o erro de acordo com as necessidades do seu aplicativo
+    }
   };
 
   const deletaChave = async (id) => {
@@ -81,9 +76,6 @@ const TabelaChave = () => {
     fetchTotalChaves();
   }, [currentPage]);
 
-  const indexOfLastChave = currentPage * chavesPerPage;
-  const indexOfFirstChave = indexOfLastChave - chavesPerPage;
-  const currentChaves = chaves.slice(indexOfFirstChave, indexOfLastChave);
 
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(totalChaves / chavesPerPage); i++) {
@@ -105,7 +97,7 @@ const TabelaChave = () => {
           </tr>
         </thead>
         <tbody>
-          {currentChaves.map((chave) => (
+          {chaves.map((chave) => (
             <tr key={chave.id}>
               <td>{chave.nome}</td>
               <td>{chave.sala.descricaosala}</td>

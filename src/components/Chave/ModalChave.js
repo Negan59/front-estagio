@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { FiSave, FiX } from 'react-icons/fi';
 
-const ModalChave = ({ chave, onSubmit, onClose }) => {
+const ModalChave = ({ chave, onSubmit, onClose, onErro, onSucesso }) => {
   const [nome, setNome] = useState('');
   const [salaId, setSalaId] = useState('');
   const [salas, setSalas] = useState([]); // Array para armazenar as salas
   const [erros, setErros] = useState({});
   const [show, setShow] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     // Função para buscar as salas ao abrir o modal
@@ -53,13 +54,11 @@ const ModalChave = ({ chave, onSubmit, onClose }) => {
       setErros(novosErros);
       return;
     }
-    let sala = salas.find(sala => sala.id == salaId);
+    let sala = salas.find((sala) => sala.id == salaId);
     let data = {
       nome,
-      sala
+      sala,
     };
-
-    console.log(data)
 
     fetch('https://estagio-guilherme.azurewebsites.net/api/chave', {
       method: 'POST',
@@ -70,7 +69,8 @@ const ModalChave = ({ chave, onSubmit, onClose }) => {
     })
       .then((response) => {
         if (response.status === 200) {
-            console.log(response)
+          setSuccessMessage('Chave adicionada com sucesso!');
+          onSucesso('Chave adicionada com sucesso!'); // Chama a função de sucesso do pai
           setNome('');
           setSalaId('');
           setErros({});
@@ -82,11 +82,13 @@ const ModalChave = ({ chave, onSubmit, onClose }) => {
       .catch((error) => {
         console.error('Erro ao adicionar a chave:', error.message);
         setErros({ erroGeral: 'Erro ao adicionar a chave. Por favor, tente novamente.' });
+        onErro('Erro ao adicionar a chave. Por favor, tente novamente.'); // Chama a função de erro do pai
       });
   };
 
   const handleModalClose = () => {
     setErros({});
+    setSuccessMessage(''); // Limpa a mensagem de sucesso ao fechar o modal
     setShow(false);
     onClose();
   };
@@ -98,6 +100,7 @@ const ModalChave = ({ chave, onSubmit, onClose }) => {
       </Modal.Header>
       <Modal.Body>
         {erros.erroGeral && <Alert variant="danger">{erros.erroGeral}</Alert>}
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="formNome">
             <Form.Label>Nome da Chave:</Form.Label>
