@@ -17,6 +17,7 @@ import Padre from './components/Padre/Padre';
 import ItensSalaoParoquial from './components/ItensSalaoParoquial/ItensSalaoParoquial';
 import PainelChave from './components/PainelChave/PainelChave';
 import Chave from './components/Chave/Chave';
+import CalendarioInterativo from './components/PainelChave/Reservas'
 
 const { Content } = Layout;
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="/pastoral" element={<Pastoral />} />
               <Route path="/tipoatividade" element={<TipoAtividade />} />
               <Route path="/painelchave" element={<PainelChave />} />
+              <Route path="/reserva" element={<CalendarioInterativo />} />
             </Routes>
           </Content>
         </Layout>

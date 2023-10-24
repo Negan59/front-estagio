@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Tag, Tooltip, Row, Col, Card, Modal, Button, Form, Select, message } from 'antd';
-import {
-  UnlockOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-} from '@ant-design/icons';
+import { Table, Space, Tag, Tooltip, Row, Col, Card, Modal, Button, Form, Select, message, Pagination } from 'antd';
+import { UnlockOutlined, ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
 const { Option } = Select;
 
 const PainelChave = () => {
-  const [salas, setSalas] = useState([]); // Estado para armazenar as salas
+  const [salas, setSalas] = useState([]);
   const [chaves, setChaves] = useState([]);
+  const [paroquianos, setParoquianos] = useState([]);
 
   const [form] = Form.useForm();
   const [selectedSala, setSelectedSala] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   useEffect(() => {
-    // Função para buscar as salas com fetch
     const fetchSalas = async () => {
       try {
-        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/sala'); // Substitua a URL pela sua API de salas
+        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/sala');
         const data = await response.json();
 
-        // Adicione o status "Livre" para cada sala
         const salasComStatusLivre = data.map((sala) => ({
           ...sala,
           estado: 'Livre',
@@ -33,24 +30,20 @@ const PainelChave = () => {
         setSalas(salasComStatusLivre);
       } catch (error) {
         console.error('Erro ao buscar as salas:', error);
-        // Trate o erro de acordo com as necessidades do seu aplicativo
       }
     };
 
-    fetchSalas(); // Chame a função para buscar as salas quando o componente for montado
+    fetchSalas();
   }, []);
 
   useEffect(() => {
-    // Função para buscar as chaves com base no ID da sala selecionada
     const fetchChaves = async (salaId) => {
       try {
-        const response = await fetch(`https://estagio-guilherme.azurewebsites.net/api/chave/sala?idSala=${salaId}`); // Substitua a URL pela sua API de chaves
+        const response = await fetch(`https://estagio-guilherme.azurewebsites.net/api/chave/sala?idSala=${salaId}`);
         const data = await response.json();
-        console.log(data)
         setChaves(data);
       } catch (error) {
         console.error('Erro ao buscar as chaves:', error);
-        // Trate o erro de acordo com as necessidades do seu aplicativo
       }
     };
 
@@ -58,6 +51,20 @@ const PainelChave = () => {
       fetchChaves(selectedSala.id);
     }
   }, [selectedSala]);
+
+  useEffect(() => {
+    const fetchParoquianos = async () => {
+      try {
+        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/paroquiano');
+        const data = await response.json();
+        setParoquianos(data);
+      } catch (error) {
+        console.error('Erro ao buscar os paroquianos:', error);
+      }
+    };
+
+    fetchParoquianos();
+  }, []);
 
   const getStatusIcon = (estado) => {
     switch (estado) {
@@ -82,33 +89,52 @@ const PainelChave = () => {
   };
 
   const onFinish = (values) => {
-    // Simulação de cadastro fictício
     message.success('Retirada cadastrada com sucesso!');
     setModalVisible(false);
     form.resetFields();
   };
 
+  const onChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div>
       <Row gutter={16}>
-        {salas.map((sala) => (
-          <Col key={sala.id} xs={24} sm={12} md={8} lg={6}>
-            <Card
-              title={`Sala ${sala.numerosala} - ${sala.descricaosala}`}
-              style={{ marginBottom: '16px', cursor: 'pointer' }}
-              onClick={() => showModal(sala)}
-            >
-              <p>
-                <b>Status da Chave:</b> {' '}
-                <UnlockOutlined style={{ color: 'green' }}></UnlockOutlined>
-                Livre
-              </p>
-              <p><b>Paroquiano:</b> {chaves.find((chave) => chave.salaId === sala.id)?.paroquiano}</p>
-              <p><b>Reserva:</b> {chaves.find((chave) => chave.salaId === sala.id)?.reserva}</p>
-            </Card>
-          </Col>
-        ))}
+        {salas
+          .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+          .map((sala) => (
+            <Col key={sala.id} xs={24} sm={12} md={8} lg={6}>
+              <Card
+                title={`Sala ${sala.numerosala} - ${sala.descricaosala}`}
+                style={{ marginBottom: '16px', cursor: 'pointer' }}
+                onClick={() => showModal(sala)}
+              >
+                <p>
+                  <b>Status da Chave:</b> {' '}
+                  {getStatusIcon(sala.estado)}
+                  {sala.estado}
+                </p>
+                <p><b>Paroquiano:</b> {chaves.find((chave) => chave.salaId === sala.id)?.paroquiano}</p>
+                <p><b>Reserva:</b> {chaves.find((chave) => chave.salaId === sala.id)?.reserva}</p>
+                <p><b>Data de Retirada:</b> {chaves.find((chave) => chave.salaId === sala.id)?.dataRetirada}</p>
+                <p><b>Hora de Retirada:</b> {chaves.find((chave) => chave.salaId === sala.id)?.horaRetirada}</p>
+                <p><b>Hora de Devolução:</b> {chaves.find((chave) => chave.salaId === sala.id)?.horaDevolucao}</p>
+                <p><b>Funcionário Responsável:</b> {chaves.find((chave) => chave.salaId === sala.id)?.funcionarioResponsavel}</p>
+              </Card>
+            </Col>
+          ))}
       </Row>
+
+      <Pagination
+        current={currentPage}
+        onChange={onChange}
+        total={salas.length}
+        pageSize={pageSize}
+        showSizeChanger={false}
+        style={{ marginTop: '16px', textAlign: 'center' }}
+      />
+
       <Modal
         title={`Detalhes da Sala ${selectedSala?.numerosala}`}
         visible={modalVisible}
@@ -141,9 +167,11 @@ const PainelChave = () => {
             label="Paroquiano"
           >
             <Select placeholder="Selecione um paroquiano">
-              <Option value="Paroquiano 1">Paroquiano 1</Option>
-              <Option value="Paroquiano 2">Paroquiano 2</Option>
-              {/* Adicione mais opções de paroquianos conforme necessário */}
+              {paroquianos.map((paroquiano) => (
+                <Option key={paroquiano.id} value={paroquiano.id}>
+                  {paroquiano.nome}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
@@ -151,8 +179,6 @@ const PainelChave = () => {
             label="Reserva"
           >
             <Select placeholder="Selecione uma reserva">
-              <Option value="Reserva 1">Reserva 1</Option>
-              <Option value="Reserva 2">Reserva 2</Option>
               {/* Adicione mais opções de reservas conforme necessário */}
             </Select>
           </Form.Item>

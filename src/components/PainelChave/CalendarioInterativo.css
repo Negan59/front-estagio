@@ -1,0 +1,57 @@
+.calendar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+  }
+  
+  .rbc-calendar {
+    width: 100%;
+    border: 1px solid #ddd;
+  }
+  
+  .rbc-time-view {
+    border-right: 1px solid #ddd;
+  }
+  
+  .rbc-time-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .rbc-time-header {
+    display: none;
+  }
+  
+  .rbc-event {
+    background-color: #3174ad;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+  .rbc-today {
+    background-color: #f7f7f7;
+    font-weight: bold;
+  }
+  
+  .rbc-toolbar-label {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .calendar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .calendar-title {
+    margin-bottom: 20px;
+  }
+  
+  .calendar-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }

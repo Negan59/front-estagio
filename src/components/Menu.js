@@ -98,7 +98,7 @@ class MyMenu extends React.Component {
               <Link to="/painelchave">Chave</Link>
             </Menu.Item>
             <Menu.Item key="reservar" icon={<CalendarOutlined />}>
-              <Link to="/reservarsala">Reservar Sala</Link>
+              <Link to="/reserva">Reservar Sala</Link>
             </Menu.Item>
           </Menu.SubMenu>
           <Menu.Item key="settings" icon={<LogoutOutlined />}>
