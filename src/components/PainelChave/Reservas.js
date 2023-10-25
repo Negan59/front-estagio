@@ -1,32 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import { FaChevronLeft, FaChevronRight, FaRegCalendarAlt } from 'react-icons/fa';
-import { Modal, Button } from 'antd';
-import ReservaModal from './ReservaModal'; // Importe o componente de modal de agendamento
-import './CalendarioInterativo.css'; // Importe o seu arquivo de estilos
+import { Modal } from 'antd';
+import ReservaModal from './ReservaModal';
+import './CalendarioInterativo.css';
 
 moment.locale('pt-br');
 
 const localizer = momentLocalizer(moment);
 
-const events = [
-  {
-    start: new Date(2023, 9, 20, 10, 0),
-    end: new Date(2023, 9, 20, 12, 0),
-    title: 'Reunião',
-  },
-  {
-    start: new Date(2023, 9, 22, 14, 0),
-    end: new Date(2023, 9, 22, 16, 0),
-    title: 'Evento importante',
-  },
-  // Adicione mais eventos conforme necessário
-];
-
 const CalendarioInterativo = () => {
+  const [reservas, setReservas] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  useEffect(() => {
+    const fetchReservas = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/reserva');
+        const data = await response.json();
+        setReservas(data);
+        console.log(data);
+      } catch (error) {
+        console.error('Erro ao buscar as reservas:', error);
+      }
+    };
+
+    fetchReservas();
+  }, []);
+
+  const handleSelectSlot = (slotInfo) => {
+    setSelectedDate(slotInfo.start);
+    setModalVisible(true);
+  };
+
+  const events = reservas.map((reserva) => ({
+    start: moment(reserva.data, 'YYYY-MM-DD').toDate(),
+    end: moment(reserva.data, 'YYYY-MM-DD').add(1, 'days').toDate(),
+    title: 'Reserva',
+  }));
+
   const myEventsList = (e) => {
     return (
       <div>
@@ -35,12 +51,65 @@ const CalendarioInterativo = () => {
     );
   };
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const CustomToolbar = (toolbar) => {
+    const goToBack = () => {
+      toolbar.onNavigate('PREV');
+    };
 
-  const handleSelectSlot = (slotInfo) => {
-    setSelectedDate(slotInfo.start);
-    setModalVisible(true);
+    const goToNext = () => {
+      toolbar.onNavigate('NEXT');
+    };
+
+    const goToCurrent = () => {
+      toolbar.onNavigate('TODAY');
+    };
+
+    const goToDay = () => {
+      toolbar.onView('day');
+    };
+
+    const goToWeek = () => {
+      toolbar.onView('week');
+    };
+
+    const goToMonth = () => {
+      toolbar.onView('month');
+    };
+
+    const label = () => {
+      const date = moment(toolbar.date);
+      return (
+        <span>
+          {date.format('MMMM')} {date.format('YYYY')}
+        </span>
+      );
+    };
+
+    return (
+      <div className="rbc-toolbar">
+        <div className="rbc-btn-group">
+          <button type="button" onClick={goToBack}>
+            <FaChevronLeft />
+          </button>
+          <button type="button" onClick={goToCurrent}>
+            Hoje
+          </button>
+          <button type="button" onClick={goToDay}>
+            Dia
+          </button>
+          <button type="button" onClick={goToWeek}>
+            Semana
+          </button>
+          <button type="button" onClick={goToMonth}>
+            <FaRegCalendarAlt />
+          </button>
+          <button type="button" onClick={goToNext}>
+            <FaChevronRight />
+          </button>
+        </div>
+        <div className="rbc-toolbar-label">{label()}</div>
+      </div>
+    );
   };
 
   return (
@@ -77,79 +146,13 @@ const CalendarioInterativo = () => {
           selectable
           onSelectSlot={handleSelectSlot}
         />
-        <Modal
-          title="Agendamento"
-          visible={modalVisible}
-          onCancel={() => setModalVisible(false)}
-          footer={null}
-        >
+        
           <ReservaModal
-            selectedDate={selectedDate}
+            visible={modalVisible}
             onCancel={() => setModalVisible(false)}
+            selectedDate={selectedDate}
           />
-        </Modal>
       </div>
-    </div>
-  );
-};
-
-const CustomToolbar = (toolbar) => {
-  const goToBack = () => {
-    toolbar.onNavigate('PREV');
-  };
-
-  const goToNext = () => {
-    toolbar.onNavigate('NEXT');
-  };
-
-  const goToCurrent = () => {
-    toolbar.onNavigate('TODAY');
-  };
-
-  const goToDay = () => {
-    toolbar.onView('day');
-  };
-
-  const goToWeek = () => {
-    toolbar.onView('week');
-  };
-
-  const goToMonth = () => {
-    toolbar.onView('month');
-  };
-
-  const label = () => {
-    const date = moment(toolbar.date);
-    return (
-      <span>
-        {date.format('MMMM')} {date.format('YYYY')}
-      </span>
-    );
-  };
-
-  return (
-    <div className="rbc-toolbar">
-      <div className="rbc-btn-group">
-        <button type="button" onClick={goToBack}>
-          <FaChevronLeft />
-        </button>
-        <button type="button" onClick={goToCurrent}>
-          Hoje
-        </button>
-        <button type="button" onClick={goToDay}>
-          Dia
-        </button>
-        <button type="button" onClick={goToWeek}>
-          Semana
-        </button>
-        <button type="button" onClick={goToMonth}>
-          <FaRegCalendarAlt />
-        </button>
-        <button type="button" onClick={goToNext}>
-          <FaChevronRight />
-        </button>
-      </div>
-      <div className="rbc-toolbar-label">{label()}</div>
     </div>
   );
 };
