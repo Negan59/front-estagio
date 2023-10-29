@@ -16,18 +16,18 @@ const CalendarioInterativo = () => {
   const [reservas, setReservas] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-
+  const fetchReservas = async () => {
+    try {
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/reserva');
+      const data = await response.json();
+      setReservas(data);
+      console.log(data);
+    } catch (error) {
+      console.error('Erro ao buscar as reservas:', error);
+    }
+  };
   useEffect(() => {
-    const fetchReservas = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/api/reserva');
-        const data = await response.json();
-        setReservas(data);
-        console.log(data);
-      } catch (error) {
-        console.error('Erro ao buscar as reservas:', error);
-      }
-    };
+    
 
     fetchReservas();
   }, []);
@@ -146,12 +146,17 @@ const CalendarioInterativo = () => {
           selectable
           onSelectSlot={handleSelectSlot}
         />
-        
-          <ReservaModal
-            visible={modalVisible}
-            onCancel={() => setModalVisible(false)}
-            selectedDate={selectedDate}
-          />
+
+        <ReservaModal
+          visible={modalVisible}
+          onCancel={() => {
+            setModalVisible(false);
+            fetchReservas(); // Atualizar as reservas ao fechar o modal
+          }}
+          selectedDate={selectedDate}
+          fetchReservas={fetchReservas}
+        />
+
       </div>
     </div>
   );
