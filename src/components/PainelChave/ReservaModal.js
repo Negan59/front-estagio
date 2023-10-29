@@ -5,8 +5,7 @@ import { Modal, Button, DatePicker, TimePicker, Select } from 'antd';
 
 const { Option } = Select;
 
-const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
-  console.log(selectedDate)
+const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
   const [data, setData] = useState(moment(selectedDate));
   const [horainicio, setHoraInicio] = useState(null);
   const [horafim, setHoraFim] = useState(null);
@@ -18,10 +17,10 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
   const [salas, setSalas] = useState([]);
 
   useEffect(() => {
-    setData(selectedDate)
+    setData(selectedDate);
     const fetchPastorais = async () => {
       try {
-        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/pastoral/ativos');
+        const response = await fetch('http://localhost:8080/api/pastoral/ativos');
         const data = await response.json();
         setPastorais(data);
       } catch (error) {
@@ -35,7 +34,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
   useEffect(() => {
     const fetchSalas = async () => {
       try {
-        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/sala');
+        const response = await fetch('http://localhost:8080/api/sala');
         const data = await response.json();
         setSalas(data);
       } catch (error) {
@@ -46,23 +45,22 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
     fetchSalas();
   }, []);
 
-  useEffect(() => {
-    const fetchParoquianos = async () => {
+  const fetchParoquianos = async (pastoral) => {
+    console.log("entrou?",pastoral)
+    if (pastoral) {
       try {
-        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/paroquiano');
+        const response = await fetch('http://localhost:8080/api/paroquianov2/' + pastoral);
         const data = await response.json();
+        console.log(data)
         setParoquianos(data);
       } catch (error) {
         console.error('Erro ao buscar os paroquianos:', error);
       }
-    };
-
-    fetchParoquianos();
-  }, []);
+    }
+  };
 
   const handleCancel = () => {
-    console.log("vai fechar não caralho")
-    onCancel(); // Chame a função onCancel para fechar o modal
+    onCancel();
   };
 
   const handleOk = async () => {
@@ -81,7 +79,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
     }
     console.log(obj)
     try {
-      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/reserva', {
+      const response = await fetch('http://localhost:8080/api/reserva', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +102,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
 
   const buscaPastoralId = async (id) => {
     try {
-      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/pastoral/' + id);
+      const response = await fetch('http://localhost:8080/api/pastoral/' + id);
       const data = await response.json();
       return data
     } catch (error) {
@@ -114,7 +112,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
 
   const buscaParoquianoId = async (id) => {
     try {
-      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/paroquiano/' + id);
+      const response = await fetch('http://localhost:8080/api/paroquiano/' + id);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -124,7 +122,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
 
   const buscaSalaId = async (id) => {
     try {
-      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/sala/' + id);
+      const response = await fetch('http://localhost:8080/api/sala/' + id);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -136,7 +134,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
     <Modal
       title="Agendamento"
       visible={visible}
-      onCancel={handleCancel} // Chame handleCancel para fechar o modal
+      onCancel={handleCancel}
       footer={[
         <Button key="back" onClick={handleCancel} style={{ color: 'red' }}>
           Cancelar
@@ -145,7 +143,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
           Salvar
         </Button>,
       ]}
-      closeIcon={<span className="close-icon" onClick={handleCancel}>&times;</span>} // Use handleCancel no evento onClick
+      closeIcon={<span className="close-icon" onClick={handleCancel}>&times;</span>}
     >
       <DatePicker
         value={data}
@@ -166,7 +164,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
       <Select
         placeholder="Selecione uma pastoral"
         style={{ marginBottom: 20, width: '100%' }}
-        onChange={(value) => setPastoral(value)}
+        onChange={(value) => { setPastoral(value); fetchParoquianos(value); }}
       >
         {pastorais.map((pastoral) => (
           <Option key={pastoral.id} value={pastoral.id}>
@@ -179,6 +177,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate,fetchReservas }) => {
         placeholder="Selecione um paroquiano"
         style={{ marginBottom: 20, width: '100%' }}
         onChange={(value) => setParoquiano(value)}
+        disabled={!pastoral}
       >
         {paroquianos.map((paroquiano) => (
           <Option key={paroquiano.id} value={paroquiano.id}>
