@@ -35,12 +35,35 @@ const CalendarioInterativo = () => {
     setModalVisible(true);
   };
 
-  const events = reservas.map((reserva) => ({
-    start: moment(reserva.data, 'YYYY-MM-DD').toDate(),
-    end: moment(reserva.data, 'YYYY-MM-DD').add(1, 'days').toDate(),
-    title: `Reserva - ${reserva.paroquiano.nome}`,
-    reserva,
-  }));
+  const groupEventsByDate = (events) => {
+    const eventMap = new Map();
+    events.forEach((reserva) => {
+      const date = moment(reserva.data, 'YYYY-MM-DD').format('YYYY-MM-DD');
+      if (eventMap.has(date)) {
+        eventMap.get(date).push(reserva);
+      } else {
+        eventMap.set(date, [reserva]);
+      }
+    });
+    const groupedEvents = [];
+    eventMap.forEach((value, key) => {
+      groupedEvents.push({
+        start: moment(key, 'YYYY-MM-DD').toDate(),
+        end: moment(key, 'YYYY-MM-DD').add(1, 'days').toDate(),
+        title: `Reserva - ${value[0].paroquiano.nome}`,
+        data: value[0].data,
+        horainicio: value[0].horainicio,
+        horafim: value[0].horafim,
+        pastoral: value[0].pastoral,
+        paroquiano: value[0].paroquiano,
+        sala: value[0].sala,
+      });
+    });
+    return groupedEvents;
+  };
+
+  const processedEvents = groupEventsByDate(reservas);
+
   const myEventsList = (e) => {
     e = e.event;
     return (
@@ -48,22 +71,30 @@ const CalendarioInterativo = () => {
         <Popover
           content={
             <div>
-              <p><strong>Data:</strong> {moment(e.data).format('DD/MM/YYYY')}</p>
-              <p><strong>Hora de início:</strong> {e.horainicio}</p>
-              <p><strong>Hora de fim:</strong> {e.horafim}</p>
-              <p><strong>Pastoral:</strong> {e.pastoral ? e.pastoral.nomepastoral : ''}</p>
-              <p><strong>Paroquiano:</strong> {e.paroquiano ? e.paroquiano.nome : ''}</p>
-              <p><strong>Sala:</strong> {e.sala ? e.sala.descricaosala : ''}</p>
+              {reservas
+                .filter((reserva) => moment(reserva.data).isSame(e.data, 'day'))
+                .map((reserva, index) => (
+                  <div key={index}>
+                    <p><strong>Data:</strong> {moment(reserva.data).format('DD/MM/YYYY')}</p>
+                    <p><strong>Hora de início:</strong> {reserva.horainicio}</p>
+                    <p><strong>Hora de fim:</strong> {reserva.horafim}</p>
+                    <p><strong>Pastoral:</strong> {reserva.pastoral ? reserva.pastoral.nomepastoral : ''}</p>
+                    <p><strong>Paroquiano:</strong> {reserva.paroquiano ? reserva.paroquiano.nome : ''}</p>
+                    <p><strong>Sala:</strong> {reserva.sala ? reserva.sala.descricaosala : ''}</p>
+                    {index !== reservas.length - 1 && <hr />}
+                  </div>
+                ))}
             </div>
           }
           title={e.title}
           trigger="click"
         >
-          <p>{e.title}</p>
+          <p>{e.title}</p> {/* Aumentar o tamanho do título */}
         </Popover>
       </div>
     );
   };
+  
 
   const CustomToolbar = (toolbar) => {
     const goToBack = () => {
@@ -126,70 +157,69 @@ const CalendarioInterativo = () => {
       }
       : {};
   };
-  
-  
+  const showModal = () => {
+    setModalVisible(true);
+  };
+
   return (
     <div className="calendar-container">
+      
       <h2 className="calendar-title">Reservas de Salas</h2>
-      <div className="calendar-wrapper">
-        {reservas && (
-          <Calendar
-            localizer={localizer}
-            events={reservas.map((reserva) => ({
-              start: moment(reserva.data, 'YYYY-MM-DD').toDate(),
-              end: moment(reserva.data, 'YYYY-MM-DD').add(1, 'days').toDate(),
-              title: `Reserva`,
-              data: reserva.data,
-              horainicio: reserva.horainicio,
-              horafim: reserva.horafim,
-              pastoral: reserva.pastoral,
-              paroquiano: reserva.paroquiano,
-              sala: reserva.sala,
-            }))}
-            startAccessor="start"
-            endAccessor="end"
-            formats={{
-              dateFormat: 'DD',
-              dayFormat: (date, culture, localizer) =>
-                localizer.format(date, 'dddd', culture),
-              timeGutterFormat: (date, culture, localizer) =>
-                localizer.format(date, 'HH:mm', culture),
-              monthHeaderFormat: (date, culture, localizer) =>
-                localizer.format(date, 'MMMM yyyy', culture),
-              dayHeaderFormat: (date, culture, localizer) =>
-                localizer.format(date, 'dddd, MMMM DD', culture),
-              dayRangeHeaderFormat: ({ start, end }, culture, localizer) =>
-                localizer.format(start, 'MMMM DD', culture) +
-                ' - ' +
-                localizer.format(end, 'MMMM DD', culture),
-            }}
-            style={{ height: 700, margin: '20px' }}
-            views={['day', 'work_week', 'week', 'month']}
-            defaultView="week"
-            components={{
-              event: myEventsList,
-              toolbar: CustomToolbar,
-            }}
-            selectable
-            onSelectSlot={handleSelectSlot}
-            dayPropGetter={dayPropGetter}// Adicionado para adicionar o estilo ao evento
-          />
-        )}
-  
+      <Button type="primary" icon={<CalendarOutlined />} onClick={showModal}>
+          Adicionar Reserva
+        </Button>
+
         <ReservaModal
           visible={modalVisible}
           onCancel={() => {
             setModalVisible(false);
-            fetchReservas(); // Atualizar as reservas ao fechar o modal
+            fetchReservas();
           }}
           selectedDate={selectedDate}
           fetchReservas={fetchReservas}
         />
+      <div className="calendar-wrapper" style={{ height: 700, margin: '20px', overflow: 'auto' }}>
+        {reservas && (
+          <div style={{ height: '100%', overflow: 'auto' }}>
+            <Calendar
+              localizer={localizer}
+              events={processedEvents}
+              startAccessor="start"
+              endAccessor="end"
+              formats={{
+                dateFormat: 'DD',
+                dayFormat: (date, culture, localizer) =>
+                  localizer.format(date, 'dddd', culture),
+                timeGutterFormat: (date, culture, localizer) =>
+                  localizer.format(date, 'HH:mm', culture),
+                monthHeaderFormat: (date, culture, localizer) =>
+                  localizer.format(date, 'MMMM yyyy', culture),
+                dayHeaderFormat: (date, culture, localizer) =>
+                  localizer.format(date, 'dddd, MMMM DD', culture),
+                dayRangeHeaderFormat: ({ start, end }, culture, localizer) =>
+                  localizer.format(start, 'MMMM DD', culture) +
+                  ' - ' +
+                  localizer.format(end, 'MMMM DD', culture),
+              }}
+              views={['day', 'work_week', 'week', 'month']}
+              defaultView="week"
+              components={{
+                event: myEventsList,
+                toolbar: CustomToolbar,
+              }}
+              selectable
+              onSelectSlot={handleSelectSlot}
+              dayPropGetter={dayPropGetter}
+            />
+          </div>
+        )}
+
+       
       </div>
+      
     </div>
+    
   );
-  
-  
 };
 
 export default CalendarioInterativo;
