@@ -4,7 +4,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import { LeftOutlined, RightOutlined, CalendarOutlined } from '@ant-design/icons';
-import { Modal, Popover, Button } from 'antd';
+import { Modal, Popover, Button, Alert } from 'antd';
 import ReservaModal from './ReservaModal';
 import './CalendarioInterativo.css';
 
@@ -16,6 +16,7 @@ const CalendarioInterativo = () => {
   const [reservas, setReservas] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [alertVisible, setAlertVisible] = useState(false);
   const fetchReservas = async () => {
     try {
       const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/reserva');
@@ -64,23 +65,58 @@ const CalendarioInterativo = () => {
 
   const processedEvents = groupEventsByDate(reservas);
 
+  const handleDeleteReserva = async (id) => {
+    try {
+      const response = await fetch(`https://estagio-guilherme.azurewebsites.net/api/reserva/${id}`, {
+        method: 'DELETE',
+      });
+  
+      if (response.status === 200) {
+        console.log('Reserva excluída com sucesso.');
+        setAlertVisible(true);
+        // Atualize as reservas após a exclusão
+        fetchReservas();
+      } else {
+        console.error('Falha ao excluir reserva.');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir reserva:', error);
+    }
+  };
+
   const myEventsList = (e) => {
     e = e.event;
     return (
       <div>
         <Popover
           content={
-            <div>
+            <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '10px' }}>
               {reservas
                 .filter((reserva) => moment(reserva.data).isSame(e.data, 'day'))
                 .map((reserva, index) => (
                   <div key={index}>
-                    <p><strong>Data:</strong> {moment(reserva.data).format('DD/MM/YYYY')}</p>
-                    <p><strong>Hora de início:</strong> {reserva.horainicio}</p>
-                    <p><strong>Hora de fim:</strong> {reserva.horafim}</p>
-                    <p><strong>Pastoral:</strong> {reserva.pastoral ? reserva.pastoral.nomepastoral : ''}</p>
-                    <p><strong>Paroquiano:</strong> {reserva.paroquiano ? reserva.paroquiano.nome : ''}</p>
-                    <p><strong>Sala:</strong> {reserva.sala ? reserva.sala.descricaosala : ''}</p>
+                    <p>
+                      <strong>Data:</strong> {moment(reserva.data).format('DD/MM/YYYY')}
+                    </p>
+                    <p>
+                      <strong>Hora de início:</strong> {reserva.horainicio}
+                    </p>
+                    <p>
+                      <strong>Hora de fim:</strong> {reserva.horafim}
+                    </p>
+                    <p>
+                      <strong>Pastoral:</strong>{' '}
+                      {reserva.pastoral ? reserva.pastoral.nomepastoral : ''}
+                    </p>
+                    <p>
+                      <strong>Paroquiano:</strong> {reserva.paroquiano ? reserva.paroquiano.nome : ''}
+                    </p>
+                    <p>
+                      <strong>Sala:</strong> {reserva.sala ? reserva.sala.descricaosala : ''}
+                    </p>
+                    <Button type="primary" danger onClick={() => handleDeleteReserva(reserva.id)}>
+                      Excluir
+                    </Button>
                     {index !== reservas.length - 1 && <hr />}
                   </div>
                 ))}
@@ -89,8 +125,9 @@ const CalendarioInterativo = () => {
           title={e.title}
           trigger="click"
         >
-          <p>{e.title}</p> {/* Aumentar o tamanho do título */}
+          <p>{e.title}</p>
         </Popover>
+        
       </div>
     );
   };
@@ -168,7 +205,15 @@ const CalendarioInterativo = () => {
       <Button type="primary" icon={<CalendarOutlined />} onClick={showModal}>
           Adicionar Reserva
         </Button>
-
+        {alertVisible && (
+        <Alert
+          message="Reserva excluída com sucesso."
+          type="success"
+          closable
+          onClose={() => setAlertVisible(false)}
+          style={{ marginTop: '10px' }}
+        />
+      )}
         <ReservaModal
           visible={modalVisible}
           onCancel={() => {

@@ -46,7 +46,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
   }, []);
 
   const fetchParoquianos = async (pastoral) => {
-    console.log("entrou?",pastoral)
+    console.log("entrou?", pastoral)
     if (pastoral) {
       try {
         const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/paroquianov2/' + pastoral);
@@ -87,11 +87,14 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
         body: JSON.stringify(obj),
       });
       const responseData = await response.json();
-      console.log('Reserva salva com sucesso', responseData);
-      // Adicione um alerta ou uma notificação para o usuário saber se a operação foi bem-sucedida
       alert('Reserva salva com sucesso!');
-      handleCancel(); // Fechar o modal após salvar com sucesso
-      // Atualizar as reservas para refletir a mudança mais recente
+      handleCancel();
+      setData(moment(selectedDate));
+      setHoraInicio(null);
+      setHoraFim(null);
+      setPastoral(null);
+      setParoquiano(null);
+      setSala(null);
       fetchReservas();
     } catch (error) {
       console.error('Erro ao salvar reserva:', error);
