@@ -18,7 +18,7 @@ const CalendarioInterativo = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const fetchReservas = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/reserva');
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/reserva');
       const data = await response.json();
       setReservas(data);
       console.log(data);

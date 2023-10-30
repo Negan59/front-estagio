@@ -20,7 +20,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
     setData(selectedDate);
     const fetchPastorais = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/pastoral/ativos');
+        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/pastoral/ativos');
         const data = await response.json();
         setPastorais(data);
       } catch (error) {
@@ -34,7 +34,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
   useEffect(() => {
     const fetchSalas = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/sala');
+        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/sala');
         const data = await response.json();
         setSalas(data);
       } catch (error) {
@@ -49,7 +49,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
     console.log("entrou?",pastoral)
     if (pastoral) {
       try {
-        const response = await fetch('http://localhost:8080/api/paroquianov2/' + pastoral);
+        const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/paroquianov2/' + pastoral);
         const data = await response.json();
         console.log(data)
         setParoquianos(data);
@@ -79,7 +79,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
     }
     console.log(obj)
     try {
-      const response = await fetch('http://localhost:8080/api/reserva', {
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/reserva', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
 
   const buscaPastoralId = async (id) => {
     try {
-      const response = await fetch('http://localhost:8080/api/pastoral/' + id);
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/pastoral/' + id);
       const data = await response.json();
       return data
     } catch (error) {
@@ -112,7 +112,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
 
   const buscaParoquianoId = async (id) => {
     try {
-      const response = await fetch('http://localhost:8080/api/paroquiano/' + id);
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/paroquiano/' + id);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -122,7 +122,7 @@ const ReservaModal = ({ visible, onCancel, selectedDate, fetchReservas }) => {
 
   const buscaSalaId = async (id) => {
     try {
-      const response = await fetch('http://localhost:8080/api/sala/' + id);
+      const response = await fetch('https://estagio-guilherme.azurewebsites.net/api/sala/' + id);
       const data = await response.json();
       return data;
     } catch (error) {
